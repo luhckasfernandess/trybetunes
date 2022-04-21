@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 // Quando ñ tem export default preciso desestruturar como fiz abaixo -> credits by Muca in the Mentoring Project
 import { createUser } from '../services/userAPI'; // Consegui fazer graças a explicação do Muca na mentoria de projeto
-import Loading from './Loading';
+import Loading from '../components/Loading';
 
 class Login extends Component {
   constructor() {
     super();
+
     this.onChange = this.onChange.bind(this);
     this.loginButton = this.loginButton.bind(this);
+
     this.state = {
       userName: '',
       disabledButton: true,
@@ -48,6 +50,7 @@ class Login extends Component {
               onChange={ this.onChange }
             />
           </label>
+
           <button
             data-testid="login-submit-button"
             type="button"
@@ -56,8 +59,10 @@ class Login extends Component {
           >
             Entrar
           </button>
+
           {/* Consegui o último subrequisito graças a ajuda do meu chará Lucas Dalbo */}
           { loading === true && <Loading /> }
+
           {/* Só volta quando for true se usar '&&' não precisa dos ':' para pensar no caso de falso */}
           { clickedButton === true && <Redirect to="/search" /> }
         </form>
