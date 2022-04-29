@@ -20,16 +20,25 @@ class MusicCard extends Component {
     this.itsChecked();
   }
 
+  // Função para recuperar as músicas salvas ao recarregar a página
   itsChecked() {
     this.setState({ loading: true }, async () => {
       this.setState({ favoritesSongs: await getFavoriteSongs(), loading: false });
     });
   }
 
+  // Consegui resolver o bug do requisito 8 graças a ajuda do Ronan Salvador que me ajudou a ver o que estava vindo no value
+  // E ao resolver o bug do 8 acabei resolvendo o requisito 10 também rsrs 2 com 1 cajadada
   didAddFavorite({ target }) {
+    // console.log(JSON.parse(target.value));
     const { value, checked } = target;
+    // console.log(this.props);
     this.setState({ loading: true }, async () => {
-      if (checked === true) await addSong(value);
+      if (checked === true) {
+        await addSong(JSON.parse(value));
+        // Chamo a função de novo aqui para atualizar mais rápido o meu estado e não dá conflito com os checkeds
+        this.setState({ favoritesSongs: await getFavoriteSongs() });
+      }
       this.setState({ loading: false });
     });
   }
@@ -41,6 +50,7 @@ class MusicCard extends Component {
     const albumArtwork = musics[0];
     // Separando os tracks do elemento zero do array
     const tracks = musics.filter((element) => element.kind);
+
     return (
       <section>
         <section>
@@ -64,7 +74,7 @@ class MusicCard extends Component {
                 <input
                   type="checkbox"
                   data-testid={ `checkbox-music-${track.trackId}` }
-                  value={ track }
+                  value={ JSON.stringify(track) }
                   checked={
                     // vai procurar por algum semelhante no array salvo do getFavoriteSongs e marcar checked, pq o some e every retornam true. Ah muleque ;)
                     favoritesSongs.some((element) => element.trackId === track.trackId)
