@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
+import { addSong, getFavoriteSongs, removeSong } from '../services/favoriteSongsAPI';
 import Loading from './Loading';
 
 class MusicCard extends Component {
@@ -37,6 +37,9 @@ class MusicCard extends Component {
       if (checked === true) {
         await addSong(JSON.parse(value));
         // Chamo a função de novo aqui para atualizar mais rápido o meu estado e não dá conflito com os checkeds
+        this.setState({ favoritesSongs: await getFavoriteSongs() });
+      } else {
+        await removeSong(JSON.parse(value));
         this.setState({ favoritesSongs: await getFavoriteSongs() });
       }
       this.setState({ loading: false });
