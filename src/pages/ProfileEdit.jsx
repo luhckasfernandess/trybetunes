@@ -11,7 +11,6 @@ class ProfileEdit extends Component {
     this.recoverUserInfo = this.recoverUserInfo.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.isDisabled = this.isDisabled.bind(this);
-    this.validateEmail = this.validateEmail.bind(this);
     this.clicked = this.clicked.bind(this);
 
     this.state = {
@@ -27,13 +26,13 @@ class ProfileEdit extends Component {
   }
 
   handleChange({ target }) {
-    const { id, value } = target;
+    const { name, value } = target;
     // Consegui esta parte consultando a fonte abaixo
     // Source: https://stackoverflow.com/questions/43638938/updating-an-object-with-setstate-in-react
     this.setState((prevState) => ({
       user: {
         ...prevState.user,
-        [id]: value, // Show de bola!
+        [name]: value, // Show de bola!
       },
     }));
     this.isDisabled();
@@ -41,35 +40,41 @@ class ProfileEdit extends Component {
     console.log(user); */
   }
 
-  recoverUserInfo() {
-    this.setState({ loading: true }, async () => {
-      this.setState({ user: await getUser(), loading: false });
-    });
-  }
-
-  // Source: https://www.horadecodar.com.br/2020/09/13/como-validar-email-com-javascript/
-  validateEmail(email) {
-    const verify = /\S+@\S+\.\S+/;
-    return verify.test(email);
-  }
-
   isDisabled() {
     const { user } = this.state;
     const { name, email, description, image } = user;
+    // Source: https://www.horadecodar.com.br/2020/09/13/como-validar-email-com-javascript/
+    const validateEmail = (props) => {
+      const verify = /\S+@\S+\.\S+/;
+      return verify.test(props);
+    };
     if (
       name !== ''
       && email !== ''
-      && this.validateEmail(email)
+      && validateEmail(email)
       && description !== ''
       && image !== ''
     ) this.setState({ disabled: false });
     else this.setState({ disabled: true });
   }
 
-  async clicked() {
+  clicked() {
     const { user } = this.state;
-    await updateUser(user);
-    this.setState({ redirect: true });
+    this.setState({
+      loading: true,
+    }, async () => {
+      await updateUser(user);
+      this.setState({ redirect: true });
+    });
+  }
+
+  recoverUserInfo() {
+    this.setState({ loading: true }, async () => {
+      this.setState({ user: await getUser(), loading: false }, () => {
+        // Eu não acredito que só faltava chamar a validação para passar nos testes!
+        this.isDisabled();
+      });
+    });
   }
 
   render() {
@@ -86,6 +91,7 @@ class ProfileEdit extends Component {
                   Nome de usuário
                   <input
                     id="name"
+                    name="name"
                     type="text"
                     defaultValue={ name }
                     onChange={ this.handleChange }
@@ -98,6 +104,7 @@ class ProfileEdit extends Component {
                   Email
                   <input
                     id="email"
+                    name="email"
                     type="email"
                     defaultValue={ email }
                     onChange={ this.handleChange }
@@ -110,6 +117,7 @@ class ProfileEdit extends Component {
                   Descrição
                   <input
                     id="description"
+                    name="description"
                     type="text"
                     defaultValue={ description }
                     onChange={ this.handleChange }
@@ -122,6 +130,7 @@ class ProfileEdit extends Component {
                   Mudar foto
                   <input
                     id="image"
+                    name="image"
                     type="text"
                     defaultValue={ image }
                     onChange={ this.handleChange }
