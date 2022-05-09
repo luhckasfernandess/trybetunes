@@ -20,7 +20,7 @@ class Profile extends Component {
     this.userInfo();
   }
 
-  userInfo() {
+  async userInfo() {
     this.setState({ loading: true }, async () => {
       this.setState({ user: await getUser(), loading: false });
     });
@@ -40,7 +40,7 @@ class Profile extends Component {
               <p>{ email }</p>
               <p>{ description }</p>
               <section>
-                <Link to="/profile/edit"> Editar perfil </Link>
+                <Link to="/profile/edit">Editar perfil</Link>
               </section>
             </section>
           )}
